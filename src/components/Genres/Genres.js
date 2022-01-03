@@ -1,6 +1,7 @@
 import { Chip } from "@material-ui/core";
 import axios from "axios";
-import { useEffect } from "react";
+import React,{ useEffect } from "react";
+import typeApi from "../../services/typeAPi";
 
 const Genres = ({
   selectedGenres,
@@ -12,23 +13,24 @@ const Genres = ({
 }) => {
   const handleAdd = (genre) => {
     setSelectedGenres([...selectedGenres, genre]);
-    setGenres(genres.filter((g) => g.id !== genre.id));
+    setGenres(genres.filter((g) => g.t_name !== genre.t_name));
     setPage(1);
   };
 
   const handleRemove = (genre) => {
+    console.log(genre.t_name);
     setSelectedGenres(
-      selectedGenres.filter((selected) => selected.id !== genre.id)
+      [...selectedGenres].filter((selected) =>
+        selected.t_name.localeCompare(genre.t_name)!==0
+      )
     );
     setGenres([...genres, genre]);
     setPage(1);
   };
 
   const fetchGenres = async () => {
-    const { data } = await axios.get(
-      `https://api.themoviedb.org/3/genre/${type}/list?api_key=${process.env.REACT_APP_API_KEY}&language=en-US`
-    );
-    setGenres(data.genres);
+    setSelectedGenres(selectedGenres);
+    setGenres(genres);
   };
 
   useEffect(() => {
@@ -45,7 +47,7 @@ const Genres = ({
       {selectedGenres.map((genre) => (
         <Chip
           style={{ margin: 2 }}
-          label={genre.name}
+          label={genre.t_name}
           key={genre.id}
           color="primary"
           clickable
@@ -56,7 +58,7 @@ const Genres = ({
       {genres.map((genre) => (
         <Chip
           style={{ margin: 2 }}
-          label={genre.name}
+          label={genre.t_name}
           key={genre.id}
           clickable
           size="small"

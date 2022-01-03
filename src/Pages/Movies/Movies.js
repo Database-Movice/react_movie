@@ -1,10 +1,15 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 
 import Genres from "../../components/Genres/Genres";
 import SingleContent from "../../components/SingleContent/SingleContent";
 import useGenre from "../../hooks/useGenre";
 import CustomPagination from "../../components/Pagination/CustomPagination";
+import movieApi from "../../services/movieApi";
+import typeApi from "../../services/typeAPi";
+import Box from "@mui/material/Box";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import NativeSelect from "@mui/material/NativeSelect";
 
 const Movies = () => {
 
@@ -14,25 +19,78 @@ const Movies = () => {
   const [content, setContent] = useState([]);
   const [numOfPages, setNumOfPages] = useState();
   const genreforURL = useGenre(selectedGenres);
-  console.log(selectedGenres);
+  const [pageLimit,setPageLimit] = useState(20);
+  const [yearList,setYearList] = useState([{
+    y_name:'2021'
+  }]);
+  const [currentSelectYear,setCurrentSelectYear] = useState(0);
+
+  useEffect(()=>{
+      fetchMovies();
+      fetchGenres();
+      fetchYear();
+  },[]);
+  useEffect(()=>{
+    console.log(content);
+  },[content]);
+
+    useEffect(()=>{
+
+        fetchMovies();
+    },[page,selectedGenres,currentSelectYear]);
+
 
   const fetchMovies = async () => {
-    const { data } = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.REACT_APP_API_KEY}&language=en-US&sort_by=popularity.desc&include_adult=false&include_video=false&page=${page}&with_genres=${genreforURL}`
-    );
-    setContent(data.results);
-    setNumOfPages(data.total_pages);
+    const params = {
+      pageLimit: pageLimit,
+      currentPage: page,
+      currentYear: yearList[currentSelectYear].y_name,
+      typeList: [...selectedGenres].map(type=>type.t_name),
+    };
+    const response = await movieApi.getmovie(params);
+    console.log(response);
+      setContent(response['data']);
+      setNumOfPages(response['total']);
   };
+    const fetchGenres = async () => {
+        const response = await typeApi.getAll();
+        setSelectedGenres(response);
+    };
+    const fetchYear = async () => {
+        const response = await movieApi.getAllYear();
+        setYearList(response);
+        console.log(response.length);
+        // setCurrentSelectYear(response.length);
+    };
 
-  useEffect(() => {
-    window.scroll(0, 0);
-    fetchMovies();
-    // eslint-disable-next-line
-  }, [genreforURL, page]);
+
+
+const  handleChangeCurrentYear=(event)=>{
+      setCurrentSelectYear(event);
+  };
 
   return (
     <div>
       <span className="pageTitle">Discover Movies</span>
+      <Box sx={{ minWidth: 120 }}>
+        <FormControl fullWidth>
+          <InputLabel variant="standard" htmlFor="uncontrolled-native">
+            年份
+          </InputLabel>
+          <NativeSelect
+            defaultValue={2021}
+            inputProps={{
+              name: "age",
+              id: "uncontrolled-native",
+            }}
+            onChange={(event) => handleChangeCurrentYear(event.target.value)}
+          >
+            {yearList.map((year, index) => (
+              <option value={index}>{year.y_name}</option>
+            ))}
+          </NativeSelect>
+        </FormControl>
+      </Box>
       <Genres
         type="movie"
         selectedGenres={selectedGenres}
@@ -47,7 +105,7 @@ const Movies = () => {
             <SingleContent
               key={c.id}
               id={c.id}
-              poster={c.poster_path}
+              poster={c.poster}
               title={c.title || c.name}
               date={c.first_air_date || c.release_date}
               media_type="movie"

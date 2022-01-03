@@ -6,7 +6,7 @@ import {
   TextField,
   ThemeProvider,
 } from "@material-ui/core";
-import "./Search.css";
+import "./DirectorSearch.css";
 import SearchIcon from "@material-ui/icons/Search";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -14,26 +14,22 @@ import CustomPagination from "../../components/Pagination/CustomPagination";
 import SingleContent from "../../components/SingleContent/SingleContent";
 import typeApi from "../../services/typeAPi";
 import movieApi from "../../services/movieApi";
-import { useParams } from "react-router-dom";
 import React from "react";
-const Search = () => {
-  const urlparams = useParams();
+const DirectorSearch = () => {
+  
   const [type, setType] = useState(0);
-  const [searchText, setSearchText] = useState(JSON.parse(JSON.stringify(urlparams.text)));
+  const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(1);
   const [content, setContent] = useState([]);
   const [numOfPages, setNumOfPages] = useState();
 
-console.log(urlparams);
 
   useEffect(()=>{
-  
     async function fetchType(){
       const respone = await typeApi.getAll();
       setType(respone);
     }
     fetchType();
-    
   },[]);
 
 
@@ -90,6 +86,20 @@ console.log(urlparams);
             <SearchIcon fontSize="large" />
           </Button>
         </div>
+        <Tabs
+          value={type}
+          indicatorColor="primary"
+          textColor="primary"
+          onChange={(event, newValue) => {
+            setType(newValue);
+            setPage(1);
+          }}
+          style={{ paddingBottom: 5 }}
+          aria-label="disabled tabs example"
+        >
+          <Tab style={{ width: "50%" }} label="Search Movies" />
+          <Tab style={{ width: "50%" }} label="Search TV Series" />
+        </Tabs>
       </ThemeProvider>
       <div className="trending">
         {content &&
@@ -115,4 +125,4 @@ console.log(urlparams);
   );
 };
 
-export default Search;
+export default DirectorSearch;

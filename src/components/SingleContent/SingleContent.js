@@ -1,8 +1,9 @@
+import React, { useEffect, useState } from "react";
 import { Badge } from "@material-ui/core";
-import { img_300, unavailable } from "../../config/config";
+import { unavailable } from "../../config/config";
 import "./SingleContent.css";
 import ContentModal from "../ContentModal/ContentModal";
-
+import SimpleLink from "../SimpleLink/SimpleLink";
 const SingleContent = ({
   id,
   poster,
@@ -12,6 +13,7 @@ const SingleContent = ({
   vote_average,
 }) => {
   return (
+      <SimpleLink to={`/movie/${id}`}>
     <ContentModal media_type={media_type} id={id}>
       <Badge
         badgeContent={vote_average}
@@ -19,7 +21,7 @@ const SingleContent = ({
       />
       <img
         className="poster"
-        src={poster ? `${img_300}${poster}` : unavailable}
+        src={poster ? poster : unavailable}
         alt={title}
       />
       <b className="title">{title}</b>
@@ -28,6 +30,7 @@ const SingleContent = ({
         <span className="subTitle">{date}</span>
       </span>
     </ContentModal>
+      </SimpleLink>
   );
 };
 

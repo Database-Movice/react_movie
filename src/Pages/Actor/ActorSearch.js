@@ -6,7 +6,7 @@ import {
   TextField,
   ThemeProvider,
 } from "@material-ui/core";
-import "./Search.css";
+import "./ActorSearch.css";
 import SearchIcon from "@material-ui/icons/Search";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -16,24 +16,23 @@ import typeApi from "../../services/typeAPi";
 import movieApi from "../../services/movieApi";
 import { useParams } from "react-router-dom";
 import React from "react";
-const Search = () => {
+const ActorSearch = () => {
   const urlparams = useParams();
+  const actorName = JSON.parse(JSON.stringify(urlparams.name));
   const [type, setType] = useState(0);
-  const [searchText, setSearchText] = useState(JSON.parse(JSON.stringify(urlparams.text)));
+  const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(1);
   const [content, setContent] = useState([]);
   const [numOfPages, setNumOfPages] = useState();
 
-console.log(urlparams);
 
   useEffect(()=>{
-  
     async function fetchType(){
       const respone = await typeApi.getAll();
       setType(respone);
     }
     fetchType();
-    
+    console.log(actorName);
   },[]);
 
 
@@ -115,4 +114,4 @@ console.log(urlparams);
   );
 };
 
-export default Search;
+export default ActorSearch;
