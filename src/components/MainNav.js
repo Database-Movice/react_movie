@@ -29,10 +29,8 @@ export default function SimpleBottomNavigation() {
     } else if (value === 1) {
       history.push("/movies");
     } else if (value === 2) {
-      history.push("/series");
-    } else if (value === 3) {
-      history.push("/search");
-    }
+      history.push("/search/''");
+    } 
   }, [value, history]);
 
   return (
@@ -53,11 +51,6 @@ export default function SimpleBottomNavigation() {
         style={{ color: "white" }}
         label="Movies"
         icon={<MovieIcon />}
-      />
-      <BottomNavigationAction
-        style={{ color: "white" }}
-        label="TV Series"
-        icon={<TvIcon />}
       />
       <BottomNavigationAction
         style={{ color: "white" }}
